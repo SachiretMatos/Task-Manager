@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Lista de Tareas</title>
+</head>
+
+<body>
+  <div class="flex flex-col items-center max-w-md mx-auto my-10 space-y-8 bg-white rounded-lg shadow-lg p-8">
+    <h1 class="font-extrabold text-3xl text-indigo-700 text-center">Tareas</h1>
+
+    <div class="flex justify-center bg-indigo-50 py-6 w-full gap-6 rounded-md px-6">
+      <div class="flex flex-col w-full text-center">
+        <label class="font-semibold mb-2 text-indigo-600" for="tarea">Nombre</label>
+        <input id="tarea"
+          class="border border-indigo-400 rounded-md p-3 text-lg placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow duration-300 shadow-sm hover:shadow-md"
+          type="text" placeholder="Ingresa la tarea..." />
+      </div>
+      <div class="flex flex-col w-full text-center">
+        <label for="estado" class="font-semibold mb-2 text-indigo-600">Estado</label>
+        <input id="estado" type="checkbox" class="mx-auto mt-3 w-6 h-6 cursor-pointer" />
+      </div>
+    </div>
+
+    <button id="agregar"
+      class="cursor-pointer border-2 border-indigo-600 rounded-md py-3 px-10 text-indigo-600 font-bold hover:bg-indigo-600 hover:text-white transition-colors duration-300 shadow-lg hover:shadow-[0_0_15px_#7c3aed]">
+      Agregar Tarea
+    </button>
+
+    <table class="w-full table-auto border-collapse border border-gray-300 rounded-md shadow-md">
+      <thead class="bg-indigo-100">
+        <tr>
+          <th class="border border-gray-300 px-4 py-2 text-left text-indigo-700 font-semibold">#</th>
+          <th class="border border-gray-300 px-4 py-2 text-left text-indigo-700 font-semibold">Descripción</th>
+          <th class="border border-gray-300 px-4 py-2 text-center text-indigo-700 font-semibold">Estado</th>
+        </tr>
+      </thead>
+      <tbody id="lista" class="divide-y divide-gray-200">
+      </tbody>
+    </table>
+
+  </div>
+
+
+
+  <script>
+    const tareaInput = document.getElementById('tarea');
+    const estadoInput = document.getElementById('estado');
+    const agregarBtn = document.getElementById('agregar');
+    const lista = document.getElementById('lista');
+
+    function leerTareas() {
+      return JSON.parse(localStorage.getItem('tareas') || '[]');
+    }
+
+    function guardarTareas(tareas) {
+      localStorage.setItem('tareas', JSON.stringify(tareas));
+    }
+
+    function mostrarTareas() {
+      const tareas = leerTareas();
+      lista.innerHTML = ''; // vaciar tbody
+
+      tareas.forEach(t => {
+        const fila = document.createElement('tr');
+        fila.classList.add('hover:bg-indigo-50');
+
+        // ID
+        const tdId = document.createElement('td');
+        tdId.className = 'border border-gray-300 px-4 py-2';
+        tdId.textContent = t.id;
+        fila.appendChild(tdId);
+
+        // Descripción
+        const tdDesc = document.createElement('td');
+        tdDesc.className = 'border border-gray-300 px-4 py-2';
+        tdDesc.textContent = t.description;
+        fila.appendChild(tdDesc);
+
+        // Estado
+        const tdEstado = document.createElement('td');
+        tdEstado.className = 'border border-gray-300 px-4 py-2 text-center';
+
+        const spanEstado = document.createElement('span');
+        spanEstado.className = t.estado
+          ? 'inline-block px-2 py-1 bg-green-400 text-white rounded-full text-xs font-semibold'
+          : 'inline-block px-2 py-1 bg-yellow-400 text-white rounded-full text-xs font-semibold';
+
+        spanEstado.textContent = t.estado ? 'Completado' : 'Pendiente';
+        tdEstado.appendChild(spanEstado);
+
+        fila.appendChild(tdEstado);
+
+        lista.appendChild(fila);
+      });
+    }
+
+    agregarBtn.addEventListener('click', () => {
+      const descripcion = tareaInput.value;
+      const estado = estadoInput.checked;
+
+      const tareas = leerTareas();
+      const nueva = {
+        id: tareas.length + 1,
+        description: descripcion,
+        estado: estado
+      };
+      tareas.push(nueva);
+      guardarTareas(tareas);
+      mostrarTareas();
+
+      // Limpiar
+      tareaInput.value = '';
+      estadoInput.checked = false;
+    });
+
+    // Mostrar tareas al cargar
+    mostrarTareas();
+  </script>
+</body>
+
+</html>

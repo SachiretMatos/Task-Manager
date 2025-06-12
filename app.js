@@ -1,3 +1,7 @@
+const tarea = document.getElementById('tarea').value;
+const estado = document.getElementById('estado').checked;
+const agregar = document.getElementById('agregar');
+
 const fs = require("fs");
 
 function readTask () {
@@ -14,18 +18,21 @@ const comando = process.argv[2];
 
 const description = process.argv[3];
 
-if(comando === "agregar") {
-    const task = readTask();
-    const nueva = {
-        id: task.length + 1,
-        description: description,
-        estado: "no hecha"
-    };
-    task.push(nueva);
-    fs.writeFileSync("task.json", JSON.stringify(task, null, 2));
-    console.log("Tarea guardada")
+function agregar_tarea (tarea,estado,agregar){
+    if(comando === agregar) {
+        const task = readTask();
+        const nueva = {
+            id: task.length + 1,
+            description: description,
+            estado: estado
+        };
+        task.push(nueva);
+        fs.writeFileSync("task.json", JSON.stringify(task, null, 2));
+        console.log("Tarea guardada")
+    }
 }
 
+agregar_tarea(tarea,estado,agregar);
 //////////////////////////////////////
 ////////////Verificar////////////////
 ////////////////////////////////////
